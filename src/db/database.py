@@ -2,8 +2,8 @@
 
 from logging import getLogger
 
-from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, async_sessionmaker
 from fastapi import Request
+from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
 from src.config.app_config import Config
 
@@ -12,11 +12,7 @@ logger = getLogger("main_logger.db")
 config = Config()
 
 engine: AsyncEngine = create_async_engine(
-    config.db.url,
-    pre_ping=True,
-    pool_size=10,
-    max_overflow=5,
-    timeout=60.0
+    config.db.url, pre_ping=True, pool_size=10, max_overflow=5, timeout=60.0
 )
 Session = async_sessionmaker()
 
@@ -31,5 +27,5 @@ async def dependency_session(request: Request):
             logger.exception(f"Exception when working with a database:\n{str(exc)}")
             await session.rollback()
         else:
-            logger.debug(f"The transaction was completed successfully.")
+            logger.debug("The transaction was completed successfully.")
             await session.commit()
