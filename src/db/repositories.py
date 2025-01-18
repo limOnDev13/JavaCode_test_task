@@ -18,8 +18,14 @@ class BaseWalletRepository(ABC):
     """The basic wallet repository."""
 
     @abstractmethod
-    async def update(self, uuid: UUID, new_data: OperationSchema) -> None:
-        """Update existing wallet or create a new."""
+    async def update_or_create(self, uuid: UUID, new_data: OperationSchema) -> int:
+        """
+        Update existing wallet or create a new.
+
+        :param uuid: Wallet UUID.
+        :param new_data: The operation data.
+        :return: Current wallet volume.
+        """
         pass
 
     @abstractmethod
@@ -40,7 +46,7 @@ class PostgresWalletRepository(BaseWalletRepository):
         """Initialize class."""
         self.__session = session
 
-    async def update(self, uuid: UUID, new_data: OperationSchema) -> None:
+    async def update_or_create(self, uuid: UUID, new_data: OperationSchema) -> int:
         """Update existing wallet or create a new."""
         wallet: Optional[Wallet] = await self.__session.get(Wallet, uuid)
         new_data_dict: Dict[str, Any] = new_data.model_dump()
@@ -61,8 +67,9 @@ class PostgresWalletRepository(BaseWalletRepository):
                 self.__session.add(wallet)
         except (ValueError, KeyError) as exc:
             logger.exception(str(exc))
+            raise exc
         else:
-            await self.__session.commit()
+            return wallet.amount
 
     async def get(self, uuid: UUID) -> Optional[WalletSchema]:
         """Get the wallet by uuid if it exists, else None."""
