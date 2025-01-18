@@ -1,0 +1,17 @@
+[project]
+name = "javacode-test-task"
+version = "0.1.0"
+description = "A web application with 2 endpoints. The application is written on the FastAPI framework, using PostgreSQL, SQLAlchemy, Redis, Docker. Allows you to process 1000 requests per second without errors."
+authors = [
+    {name = "Vladimir Volosnikov",email = "volosnikovvladimir69@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.115.6,<0.116.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
