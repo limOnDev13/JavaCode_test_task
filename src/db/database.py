@@ -2,10 +2,7 @@
 
 from logging import getLogger
 
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from src.config.app_config import Config
 
