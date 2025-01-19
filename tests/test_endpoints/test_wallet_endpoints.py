@@ -102,3 +102,39 @@ async def test_post_wallets_operation_random_order(
             f"/api/v1/wallets/{str(random_uuid)}/operation", json=operation.model_dump()
         )
         assert 200 <= response.status_code < 300 or 400 <= response.status_code < 500
+
+
+@pytest.mark.asyncio
+async def test_get_wallet_amount(
+    client: AsyncClient,
+    operation_inc: OperationSchema,
+):
+    """Test the endpoint GET /api/v1/wallets/{wallet_uuid}."""
+    # not existing wallet
+    random_uuid: UUID = uuid4()
+    response = await client.get(f"/api/v1/wallets/{random_uuid}")
+    assert response.status_code == 404
+
+    # create a new wallet
+    response = await client.post(
+        f"/api/v1/wallets/{str(random_uuid)}/operation", json=operation_inc.model_dump()
+    )
+    assert response.status_code == 201
+
+    # get existing wallet
+    response = await client.get(f"/api/v1/wallets/{random_uuid}")
+    assert response.status_code == 200
+    assert response.json()["amount"] == operation_inc.amount
+
+
+@pytest.mark.asyncio
+async def test_get_wallet_amount_with_invalid_uuid(
+    client: AsyncClient,
+):
+    """Test the endpoint GET /api/v1/wallets/{wallet_uuid} with invalid uuid."""
+    # not existing wallet
+    invalid_uuid: str = "".join(
+        random.choices(random.choices(ascii_letters, k=random.randint(1, 10)))
+    )
+    response = await client.get(f"/api/v1/wallets/{invalid_uuid}")
+    assert response.status_code == 400
