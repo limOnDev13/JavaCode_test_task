@@ -56,7 +56,7 @@ async def update_wallet(
     try:
         w_uuid: uuid.UUID = uuid.UUID(wallet_uuid)
     except ValueError:
-        logger.exception("Wallet uuid is not valid.")
+        logger.warning("Wallet uuid is not valid.")
         raise HTTPException(
             status_code=400,
             detail={
