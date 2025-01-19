@@ -20,19 +20,18 @@ class WalletOperations(object):
         wallet_amount (int) - The initial amount of money in the wallet.
     """
 
-    __operations: Dict[str, str] = dict(
-        _decrease_wallet="WITHDRAW",
-        _increase_wallet="DEPOSIT",
-    )
-
     def __init__(self, wallet_amount: int = 0):
         """Initialize class."""
         self.__wallet_amount = wallet_amount
+        self.__operations: Dict[str, Callable] = {
+            "WITHDRAW": self.__decrease_wallet,
+            "DEPOSIT": self.__increase_wallet,
+        }
 
-    @classmethod
-    def set_operations(cls) -> Set[str]:
+    @property
+    def set_operations(self) -> Set[str]:
         """Return a set of operation names."""
-        return set(cls.__operations.values())
+        return set(self.__operations.keys())
 
     def make_things(self, operation: str, **data) -> Any:
         """
@@ -42,14 +41,12 @@ class WalletOperations(object):
         :raise KeyError: If the operation is not found.
         :return: The result of the operation.
         """
-        for method_name, operation_name in self.__operations.items():
-            if operation == operation_name:
-                method: Callable = getattr(self, method_name)
-                return method(**data)
-        else:
+        try:
+            return self.__operations[operation](**data)
+        except KeyError:
             raise KeyError(f"Operation {operation} not found.")
 
-    def _decrease_wallet(self, *, amount: int):
+    def __decrease_wallet(self, *, amount: int):
         """
         Reduce wallet account.
 
@@ -65,7 +62,7 @@ class WalletOperations(object):
         self.__wallet_amount -= amount
         return self.__wallet_amount
 
-    def _increase_wallet(self, *, amount: int):
+    def __increase_wallet(self, *, amount: int):
         """
         Increase wallet account.
 
