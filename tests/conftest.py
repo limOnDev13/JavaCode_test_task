@@ -72,14 +72,14 @@ def random_operation() -> OperationSchema:
     )
 
 
-@pytest.fixture(scope="function")
-def test_app() -> Generator[FastAPI, None, None]:
+@pytest.fixture()
+def test_app(db) -> Generator[FastAPI, None, None]:
     """Create a test_app with overridden dependencies."""
     _app: FastAPI = create_app()
     yield _app
 
 
-@pytest_asyncio.fixture(scope="function")
+@pytest_asyncio.fixture()
 async def client(test_app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
     """Create a http client."""
     async with AsyncClient(
