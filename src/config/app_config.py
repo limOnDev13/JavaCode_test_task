@@ -34,8 +34,17 @@ class DB(object):
 
 
 @dataclass
+class RedisConfig(object):
+    """Config class for the redis."""
+
+    url: str = os.getenv("REDIS_URL", "redis://localhost")
+    cache_timeout: int = int(os.getenv("CACHE_TIMEOUT", "60"))
+
+
+@dataclass
 class Config(object):
     """Config class for the app."""
 
     debug: bool = os.getenv("DEBUG", "0") == "1"
     db: DB = field(default_factory=DB)
+    redis: RedisConfig = field(default_factory=RedisConfig)
