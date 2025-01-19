@@ -36,7 +36,7 @@ class OperationSchema(BaseModel):
     operationType: str = Field(
         ...,
         description="The type of operation with the wallet."
-        " The value must be in OPERATION_TYPES.",
+        f" The value must be in {WalletOperations.set_operations()}.",
     )
 
     @field_validator("operationType", mode="after")
@@ -47,7 +47,7 @@ class OperationSchema(BaseModel):
 
         if value not in set_operations:
             raise ValueError(
-                f"operationType must be in {set_operations}."
+                f"operationType must be in {str(set_operations)}."
                 f" The received value is {value}"
             )
         return value

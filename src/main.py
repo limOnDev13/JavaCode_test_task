@@ -3,11 +3,11 @@
 import logging.config
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 
 from .config.app_config import Config
 from .config.log_config import LOG_CONFIG
-from .db.database import dependency_session, engine
+from .db.database import engine
 from .db.models import Base
 from .routes.wallet_route import router as wallet_router
 
@@ -55,7 +55,6 @@ def create_app() -> FastAPI:
     app_ = FastAPI(
         lifespan=lifespan,
         openapi_tags=tags_metadata,
-        dependencies=[Depends(dependency_session)],
     )
 
     app_.include_router(wallet_router)

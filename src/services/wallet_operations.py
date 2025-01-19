@@ -43,7 +43,6 @@ class WalletOperations(object):
         :return: The result of the operation.
         """
         for method_name, operation_name in self.__operations.items():
-            print(f"{method_name=} {operation_name=}")
             if operation == operation_name:
                 method: Callable = getattr(self, method_name)
                 return method(**data)
