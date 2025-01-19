@@ -5,11 +5,14 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 import pytest_asyncio
+from fastapi import FastAPI
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.database import Session, engine
 from src.db.models import Base
 from src.db.repositories import PostgresWalletRepository
+from src.main import create_app
 from src.schemas.schemas import OperationSchema
 from src.services.wallet_operations import WalletOperations
 
@@ -22,7 +25,6 @@ async def db() -> AsyncGenerator[None, None]:
         await conn.run_sync(Base.metadata.create_all)
 
     yield
-
     await engine.dispose()
 
 
@@ -68,3 +70,19 @@ def random_operation() -> OperationSchema:
         amount=random.randint(0, 100),
         operationType=random.choice(list(WalletOperations().set_operations)),
     )
+
+
+@pytest.fixture(scope="function")
+def test_app() -> Generator[FastAPI, None, None]:
+    """Create a test_app with overridden dependencies."""
+    _app: FastAPI = create_app()
+    yield _app
+
+
+@pytest_asyncio.fixture(scope="function")
+async def client(test_app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
+    """Create a http client."""
+    async with AsyncClient(
+        transport=ASGITransport(app=test_app), base_url="http://localhost:8000"
+    ) as client:
+        yield client
