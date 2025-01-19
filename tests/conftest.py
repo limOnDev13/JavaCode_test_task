@@ -1,7 +1,7 @@
 """The module responsible for the fixtures for the tests."""
 
 import random
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator, List
 
 import pytest
 import pytest_asyncio
@@ -70,6 +70,18 @@ def random_operation() -> OperationSchema:
         amount=random.randint(0, 100),
         operationType=random.choice(list(WalletOperations().set_operations)),
     )
+
+
+@pytest.fixture
+def list_random_operations() -> List[OperationSchema]:
+    """Return the list of random operation schemas."""
+    return [
+        OperationSchema(
+            amount=random.randint(0, 100),
+            operationType=random.choice(list(WalletOperations().set_operations)),
+        )
+        for _ in range(random.randint(1, 100))
+    ]
 
 
 @pytest.fixture()
