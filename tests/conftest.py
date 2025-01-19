@@ -1,5 +1,6 @@
 """The module responsible for the fixtures for the tests."""
 
+import random
 from typing import AsyncGenerator, Generator
 
 import pytest
@@ -9,6 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.database import Session, engine
 from src.db.models import Base
 from src.db.repositories import PostgresWalletRepository
+from src.schemas.schemas import OperationSchema
+from src.services.wallet_operations import WalletOperations
 
 
 @pytest_asyncio.fixture()
@@ -38,3 +41,30 @@ async def session(db) -> AsyncGenerator[AsyncSession, None]:
 def rep(session: AsyncSession) -> Generator[PostgresWalletRepository, None, None]:
     """Return the TaskRepository object."""
     yield PostgresWalletRepository(session)
+
+
+@pytest.fixture
+def operation_inc() -> OperationSchema:
+    """Return the test operation schema to increase the wallet."""
+    return OperationSchema(
+        amount=10,
+        operationType="DEPOSIT",
+    )
+
+
+@pytest.fixture
+def operation_dec() -> OperationSchema:
+    """Return the test operation schema to decrease the wallet."""
+    return OperationSchema(
+        amount=10,
+        operationType="WITHDRAW",
+    )
+
+
+@pytest.fixture
+def random_operation() -> OperationSchema:
+    """Return the test operation schema to decrease the wallet."""
+    return OperationSchema(
+        amount=random.randint(0, 100),
+        operationType=random.choice(list(WalletOperations().set_operations)),
+    )
