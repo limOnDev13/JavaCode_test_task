@@ -57,6 +57,7 @@ def create_app() -> FastAPI:
         openapi_tags=tags_metadata,
     )
 
+    # register routers
     app_.include_router(wallet_router)
 
     return app_
