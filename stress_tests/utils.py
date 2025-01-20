@@ -1,4 +1,4 @@
-"""The module with auxiliary functions"""
+"""The module with auxiliary functions."""
 
 import random
 from typing import List, Set
