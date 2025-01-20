@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from src.cache.base_cache import BaseCache
-from src.cache.redis_cache import dependency_redis
 from src.db.repositories import BaseWalletRepository, PostgresWalletRepository
 from src.schemas.schemas import OperationSchema, WalletSchema
 from src.utils.uuid_validating import validate_uuid
@@ -55,7 +54,6 @@ async def update_wallet(
     request: Request,
     operation: OperationSchema,
     wallet_rep: Annotated[BaseWalletRepository, Depends(PostgresWalletRepository)],
-    cache: Annotated[BaseCache, Depends(dependency_redis)],
 ):
     """Update the wallet or create a new."""
     try:
@@ -67,6 +65,7 @@ async def update_wallet(
         logger.warning(str(exc))
         raise HTTPException(status_code=400, detail=str(exc))
     else:
+        cache: BaseCache = request.state.cache
         await cache.put(wallet_uuid, wallet_amount)
 
         if was_updated:
@@ -114,10 +113,10 @@ async def update_wallet(
 async def get_wallet(
     request: Request,
     wallet_rep: Annotated[BaseWalletRepository, Depends(PostgresWalletRepository)],
-    cache: Annotated[BaseCache, Depends(dependency_redis)],
 ):
     """Get the wallet by uuid."""
     wallet_uuid: UUID = request.state.uuid
+    cache: BaseCache = request.state.cache
     value_from_cache: Optional[int] = await cache.get(wallet_uuid)
 
     if value_from_cache is None:
