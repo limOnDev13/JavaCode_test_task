@@ -7,9 +7,7 @@ LOG_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "base": {
-            "format": "[%(levelname)s] [%(asctime)s] | %(funcName)s - %(message)s"
-        },
+        "base": {"format": "[%(levelname)s] [%(asctime)s] | %(name)s - %(message)s"},
     },
     "handlers": {
         "console": {

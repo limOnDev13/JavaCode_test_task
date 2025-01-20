@@ -3,12 +3,14 @@
 import logging.config
 from contextlib import asynccontextmanager
 
+import redis.asyncio as redis
 from fastapi import FastAPI
 
 from .config.app_config import Config
 from .config.log_config import LOG_CONFIG
 from .db.database import engine
 from .db.models import Base
+from .middlewares.cache_middleware import RedisCacheMiddleware
 from .routes.wallet_route import router as wallet_router
 
 config = Config()
@@ -57,8 +59,20 @@ def create_app() -> FastAPI:
         openapi_tags=tags_metadata,
     )
 
+    # create redis connections pool
+    redis_pool = redis.ConnectionPool.from_url(
+        Config().redis.url,
+        max_connections=2000,
+        decode_responses=True,
+        socket_timeout=60,
+        health_check_interval=30,
+    )
+
     # register routers
     app_.include_router(wallet_router)
+
+    # register middlewares
+    app_.add_middleware(RedisCacheMiddleware, redis_pool)
 
     return app_
 
