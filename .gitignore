@@ -189,3 +189,4 @@ fabric.properties
 # my db
 /postgres-data-test/
 /redisdata/
+/postgres-data/
