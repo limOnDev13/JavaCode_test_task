@@ -1,7 +1,29 @@
 services:
+  nginx:
+    build:
+      dockerfile: nginx/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      fastapi1:
+        condition: service_started
+        restart: true
+      fastapi2:
+        condition: service_started
+        restart: true
+      fastapi3:
+        condition: service_started
+        restart: true
+      fastapi4:
+        condition: service_started
+        restart: true
+    networks:
+      - nginx_network
+
   postgres:
     image: postgres:latest
     env_file: ".env"
+    command: -c 'max_connections=500'
     ports:
       - '${POSTGRES_PORT}:5432'
     volumes:
@@ -39,10 +61,11 @@ services:
     networks:
       - cache_network
 
-  app:
-    build: .
-    ports:
-      - "8000:8000"
+  fastapi1:
+    build:
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
     command: >
       sh -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
     env_file: ".env"
@@ -56,8 +79,71 @@ services:
     networks:
       - db_network
       - cache_network
+      - nginx_network
+
+  fastapi2:
+    build:
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    command: >
+      sh -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
+    env_file: ".env"
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
+    networks:
+      - db_network
+      - cache_network
+      - nginx_network
+
+  fastapi3:
+    build:
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    command: >
+      sh -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
+    env_file: ".env"
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
+    networks:
+      - db_network
+      - cache_network
+      - nginx_network
+
+  fastapi4:
+    build:
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    command: >
+      sh -c "uvicorn src.main:app --host 0.0.0.0 --port 8000 --workers 4"
+    env_file: ".env"
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_healthy
+        restart: true
+    networks:
+      - db_network
+      - cache_network
+      - nginx_network
 
 networks:
+  nginx_network:
+    driver: bridge
   db_network:
     driver: bridge
   cache_network:
