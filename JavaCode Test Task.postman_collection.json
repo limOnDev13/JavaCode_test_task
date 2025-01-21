@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "bcd24efc-e085-4c0b-ac54-073a8ce398b6",
+		"name": "JavaCode Test Task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36399069"
+	},
+	"item": [
+		{
+			"name": "get wallet balance",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/v1/wallets/{{wallet_uuid}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wallets",
+						"{{wallet_uuid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DEPOSIT operation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"operationType\": \"DEPOSIT\",\r\n    \"amount\": 1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/wallets/{{wallet_uuid}}/operation",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wallets",
+						"{{wallet_uuid}}",
+						"operation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "WITHDRAW operation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"operationType\": \"WITHDRAW\",\r\n    \"amount\": 1000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/v1/wallets/{{wallet_uuid}}/operation",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wallets",
+						"{{wallet_uuid}}",
+						"operation"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "wallet_uuid",
+			"value": "914e1b38-47b8-4267-a075-f29069ebca3f",
+			"type": "string"
+		}
+	]
+}
