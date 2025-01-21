@@ -1,11 +1,18 @@
 """The module responsible for pushing the redis connection to each handler."""
 
+import logging
+
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, Response
 from redis.asyncio.connection import ConnectionPool
+from redis.asyncio.retry import Retry
+from redis.backoff import ExponentialBackoff
+from redis.exceptions import RedisError
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from src.cache.redis_cache import RedisCache
+
+logger = logging.getLogger("main_logger.middleware")
 
 
 class RedisCacheMiddleware(BaseHTTPMiddleware):
@@ -14,13 +21,22 @@ class RedisCacheMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: FastAPI, redis_pool: ConnectionPool):
         """Initialize middleware."""
         super().__init__(app)
-        self.__pool = redis_pool
+        retry = Retry(ExponentialBackoff(), 3)
+        self.__client = redis.Redis(
+            connection_pool=redis_pool,
+            retry=retry,
+            retry_on_error=[RedisError],
+            retry_on_timeout=True,
+        )
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
         """Take a connection from the pool and add it to the request.state.cache."""
-        async with redis.Redis.from_pool(self.__pool) as client:
-            await client.ping()
-            request.state.cache = RedisCache(client)
+        try:
+            await self.__client.ping()
+            request.state.cache = RedisCache(self.__client)
             return await call_next(request)
+        except RedisError as exc:
+            logger.warning("Exception in redis:\n%s", str(exc))
+            return Response("Internal Server Error", status_code=500)
