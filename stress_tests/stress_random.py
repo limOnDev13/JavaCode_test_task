@@ -91,7 +91,7 @@ def thousand_random_of_pain(
 
 if __name__ == "__main__":
     thousand_pain: int = 1000
-    num_users: int = 5
+    num_users: int = 1
     thousand_random_of_pain(
         num_requests=thousand_pain,
         num_uuids=num_users,

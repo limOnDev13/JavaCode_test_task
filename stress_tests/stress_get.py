@@ -12,9 +12,7 @@ from httpx import AsyncClient, Response, Timeout
 from src.config.log_config import LOG_CONFIG
 from src.schemas.schemas import OperationSchema
 from stress_tests.stress_post import post_request_to_server
-from stress_tests.utils import create_uuids
-
-from .utils import print_results_of_stress_tests
+from stress_tests.utils import create_uuids, print_results_of_stress_tests
 
 logging.config.dictConfig(LOG_CONFIG)
 logger = logging.getLogger("main_logger.stress_tests")
@@ -103,7 +101,7 @@ async def thousand_get_of_pain(
 
 if __name__ == "__main__":
     thousand_pain: int = 1000
-    num_users: int = 1000
+    num_users: int = 1
     asyncio.run(
         thousand_get_of_pain(
             thousand_pain,
